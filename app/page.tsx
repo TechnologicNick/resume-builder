@@ -1,9 +1,20 @@
-import { Sandpack } from "@codesandbox/sandpack-react";
+"use client";
+
+import {
+  SandpackLayout,
+  SandpackPreview,
+  SandpackProvider,
+} from "@codesandbox/sandpack-react";
+import dynamic from "next/dynamic";
+
+const MonacoEditor = dynamic(() => import("./_components/monaco-editor"), {
+  ssr: false,
+});
 
 export default function Home() {
   return (
     <div>
-      <Sandpack
+      <SandpackProvider
         theme="dark"
         template="react-ts"
         customSetup={{
@@ -16,10 +27,12 @@ export default function Home() {
             code: source,
           },
         }}
-        options={{
-          editorHeight: "100%",
-        }}
-      />
+      >
+        <SandpackLayout>
+          <MonacoEditor />
+          <SandpackPreview style={{ height: "100vh" }} />
+        </SandpackLayout>
+      </SandpackProvider>
     </div>
   );
 }
@@ -28,7 +41,7 @@ const source = `
 import { compile, PageTop, PageBottom, PageBreak, Tailwind } from "@fileforge/react-print";
 import * as React from "react";
 
-export const Document = ({ props }) => {
+export const Document = () => {
   return (
     <Tailwind>
       <PageTop>
@@ -45,7 +58,7 @@ export const Document = ({ props }) => {
 };
 
 export default function App() {
-  const [html, setHtml] = React.useState();
+  const [html, setHtml] = React.useState<string>();
 
   React.useEffect(() => {
     (async () => {
