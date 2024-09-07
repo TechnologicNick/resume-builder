@@ -42,6 +42,7 @@ import { compile, PageTop, PageBottom, PageBreak, Tailwind } from "@fileforge/re
 import * as React from "react";
 
 export const Document = () => {
+  // No JSX syntax highlighting sadly, I tried
   return (
     <Tailwind>
       <PageTop>
