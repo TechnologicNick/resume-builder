@@ -1,17 +1,41 @@
 "use client";
 
 import {
+  SandpackConsole,
   SandpackLayout,
   SandpackPreview,
   SandpackProvider,
 } from "@codesandbox/sandpack-react";
 import dynamic from "next/dynamic";
+import { useEffect } from "react";
 
 const MonacoEditor = dynamic(() => import("./_components/monaco-editor"), {
   ssr: false,
 });
 
+function handleMessage(event: MessageEvent<any>) {
+  if (
+    typeof event.data !== "object" ||
+    event.data.type !== "render-pdf" ||
+    !(event.data.buffer instanceof ArrayBuffer)
+  ) {
+    return;
+  }
+
+  const blob = new Blob([event.data.buffer], { type: "application/pdf" });
+  const url = URL.createObjectURL(blob);
+  window.open(url, "pdf");
+}
+
 export default function Home() {
+  useEffect(() => {
+    window.addEventListener("message", handleMessage);
+
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, []);
+
   return (
     <div>
       <SandpackProvider
@@ -31,6 +55,7 @@ export default function Home() {
         <SandpackLayout>
           <MonacoEditor />
           <SandpackPreview style={{ height: "100vh" }} />
+          <SandpackConsole style={{ height: "100vh" }} />
         </SandpackLayout>
       </SandpackProvider>
     </div>
@@ -59,15 +84,24 @@ export const Document = () => {
 };
 
 export default function App() {
-  const [html, setHtml] = React.useState<string>();
-
   React.useEffect(() => {
     (async () => {
       const html = await compile(<Document />)
-      setHtml(html);
+
+      const res = await fetch("http://localhost:3000/pdf", {
+        method: "POST",
+        body: html
+      });
+
+      const buffer = await res.arrayBuffer();
+      
+      window.parent.postMessage({
+        type: "render-pdf",
+        buffer
+      }, "*", [buffer]);
     })();
   }, []);
 
-  return <pre>{html}</pre>
+  return null
 }
 `.trimStart();
