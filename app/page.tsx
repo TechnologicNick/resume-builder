@@ -1,5 +1,6 @@
 "use client";
 
+import { PDFViewer } from "@/components/pdf-viewer";
 import {
   SandpackConsole,
   SandpackLayout,
@@ -7,28 +8,32 @@ import {
   SandpackProvider,
 } from "@codesandbox/sandpack-react";
 import dynamic from "next/dynamic";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const MonacoEditor = dynamic(() => import("./_components/monaco-editor"), {
   ssr: false,
 });
 
-function handleMessage(event: MessageEvent<any>) {
-  if (
-    typeof event.data !== "object" ||
-    event.data.type !== "render-pdf" ||
-    !(event.data.buffer instanceof ArrayBuffer)
-  ) {
-    return;
-  }
-
-  const blob = new Blob([event.data.buffer], { type: "application/pdf" });
-  const url = URL.createObjectURL(blob);
-  window.open(url, "pdf");
-}
-
 export default function Home() {
+  const [file, setFile] = useState<File | null>(null);
+
   useEffect(() => {
+    function handleMessage(event: MessageEvent<any>) {
+      if (
+        typeof event.data !== "object" ||
+        event.data.type !== "render-pdf" ||
+        !(event.data.buffer instanceof ArrayBuffer)
+      ) {
+        return;
+      }
+
+      setFile(
+        new File([event.data.buffer], "document.pdf", {
+          type: "application/pdf",
+        })
+      );
+    }
+
     window.addEventListener("message", handleMessage);
 
     return () => {
@@ -56,6 +61,7 @@ export default function Home() {
           <MonacoEditor />
           <SandpackPreview style={{ height: "100vh" }} />
           <SandpackConsole style={{ height: "100vh" }} />
+          <PDFViewer file={file} />
         </SandpackLayout>
       </SandpackProvider>
     </div>
