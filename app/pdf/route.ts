@@ -45,7 +45,7 @@ async function createPDFStreamResponse(
 }
 
 export async function POST(req: NextRequest) {
-  const html = await req.text();
+  const html = `<!DOCTYPE html><html><body>${await req.text()}</body></html>`;
 
   let page = await (await browser).newPage();
   page.setJavaScriptEnabled(false);
@@ -65,6 +65,7 @@ export async function POST(req: NextRequest) {
     page,
     {
       omitBackground: true,
+      printBackground: true,
       format: "A4",
     },
     async () => {
