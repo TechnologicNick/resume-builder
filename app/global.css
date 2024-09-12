@@ -2,3 +2,24 @@ div.sp-layout {
   border: unset;
   border-radius: unset;
 }
+
+.react-pdf__Document {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  overflow-y: scroll;
+  padding: 1rem;
+  background-color: var(--sp-colors-surface1);
+  border-left: 1px solid var(--sp-colors-surface2);
+
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.react-pdf__Page {
+  width: fit-content;
+  margin: 0 auto;
+}

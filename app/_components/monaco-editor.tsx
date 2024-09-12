@@ -2,7 +2,6 @@ import Editor, { type Monaco } from "@monaco-editor/react";
 import {
   useActiveCode,
   SandpackStack,
-  FileTabs,
   useSandpack,
 } from "@codesandbox/sandpack-react";
 
@@ -22,7 +21,6 @@ export default function MonacoEditor() {
 
   return (
     <SandpackStack style={{ height: "100vh", margin: 0 }}>
-      <FileTabs />
       <div style={{ flex: 1, paddingTop: 8, background: "#1e1e1e" }}>
         <Editor
           width="100%"

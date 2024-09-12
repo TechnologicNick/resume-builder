@@ -2,45 +2,14 @@
 
 import { PDFViewer } from "@/components/pdf-viewer";
 import {
-  SandpackConsole,
+  SandpackCodeEditor,
   SandpackLayout,
   SandpackPreview,
   SandpackProvider,
 } from "@codesandbox/sandpack-react";
-import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
-
-const MonacoEditor = dynamic(() => import("./_components/monaco-editor"), {
-  ssr: false,
-});
+import MonacoEditor from "./_components/monaco-editor";
 
 export default function Home() {
-  const [file, setFile] = useState<File | null>(null);
-
-  useEffect(() => {
-    function handleMessage(event: MessageEvent<any>) {
-      if (
-        typeof event.data !== "object" ||
-        event.data.type !== "render-pdf" ||
-        !(event.data.buffer instanceof ArrayBuffer)
-      ) {
-        return;
-      }
-
-      setFile(
-        new File([event.data.buffer], "document.pdf", {
-          type: "application/pdf",
-        })
-      );
-    }
-
-    window.addEventListener("message", handleMessage);
-
-    return () => {
-      window.removeEventListener("message", handleMessage);
-    };
-  }, []);
-
   return (
     <div>
       <SandpackProvider
@@ -55,13 +24,21 @@ export default function Home() {
           "/App.tsx": {
             code: source,
           },
+          "/render.ts": {
+            code: renderSource,
+            hidden: true,
+          },
+          "/index.tsx": {
+            code: indexSource,
+            hidden: true,
+          },
         }}
       >
-        <SandpackLayout>
+        <SandpackLayout style={{ position: "relative" }}>
           <MonacoEditor />
+          {/* <SandpackCodeEditor style={{ height: "100vh" }} /> */}
           <SandpackPreview style={{ height: "100vh" }} />
-          <SandpackConsole style={{ height: "100vh" }} />
-          <PDFViewer file={file} />
+          <PDFViewer />
         </SandpackLayout>
       </SandpackProvider>
     </div>
@@ -69,10 +46,12 @@ export default function Home() {
 }
 
 const source = `
-import { compile, PageTop, PageBottom, PageBreak, Tailwind } from "@fileforge/react-print";
+import { PageTop, PageBottom, PageBreak, Tailwind } from "@fileforge/react-print";
 import * as React from "react";
+// @ts-ignore
+import { render } from "./render";
 
-export const Document = () => {
+export default function Document() {
   // No JSX syntax highlighting sadly, I tried
   return (
     <Tailwind>
@@ -89,25 +68,27 @@ export const Document = () => {
   );
 };
 
-export default function App() {
-  React.useEffect(() => {
-    (async () => {
-      const html = await compile(<Document />)
+render(<Document />);
+`.trimStart();
 
-      const res = await fetch("http://localhost:3000/pdf", {
-        method: "POST",
-        body: html
-      });
+const renderSource = `
+import { compile } from "@fileforge/react-print";
 
-      const buffer = await res.arrayBuffer();
-      
-      window.parent.postMessage({
-        type: "render-pdf",
-        buffer
-      }, "*", [buffer]);
-    })();
-  }, []);
-
-  return null
+export async function render(element: JSX.Element) {
+  const html = await compile(element)
+  const res = await fetch("http://localhost:3000/pdf", {
+    method: "POST",
+    body: html
+  });
+  const buffer = await res.arrayBuffer();
+  
+  window.parent.postMessage({
+    type: "render-pdf",
+    buffer
+  }, "*", [buffer]);
 }
+`.trimStart();
+
+const indexSource = `
+import "./App";
 `.trimStart();
