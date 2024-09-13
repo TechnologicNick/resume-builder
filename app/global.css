@@ -19,7 +19,7 @@ div.sp-layout {
   gap: 1rem;
 }
 
-.react-pdf__Document {
+.react-pdf__Document, .react-pdf__Document * {
   display: none;
 }
 
