@@ -6,8 +6,10 @@ import {
   SandpackLayout,
   SandpackPreview,
   SandpackProvider,
+  useActiveCode,
 } from "@codesandbox/sandpack-react";
 import MonacoEditor from "./_components/monaco-editor";
+import { useEffect } from "react";
 
 export default function Home() {
   return (
@@ -34,6 +36,7 @@ export default function Home() {
           },
         }}
       >
+        <HashUpdater />
         <SandpackLayout style={{ position: "relative" }}>
           <MonacoEditor />
           {/* <SandpackCodeEditor style={{ height: "100vh" }} /> */}
@@ -45,7 +48,19 @@ export default function Home() {
   );
 }
 
-const source = `
+function HashUpdater() {
+  const { code } = useActiveCode();
+
+  useEffect(() => {
+    window.history.replaceState(null, "", `#${btoa(code)}`);
+  }, [code]);
+
+  return null;
+}
+
+const source = window.location.hash
+  ? atob(window.location.hash.slice(1))
+  : `
 import { PageTop, PageBottom, PageBreak, Tailwind } from "@fileforge/react-print";
 import * as React from "react";
 // @ts-ignore
