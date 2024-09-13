@@ -58,9 +58,10 @@ function HashUpdater() {
   return null;
 }
 
-const source = window.location.hash
-  ? atob(window.location.hash.slice(1))
-  : `
+const source =
+  typeof window !== "undefined" && window.location.hash
+    ? atob(window.location.hash.slice(1))
+    : `
 import { PageTop, PageBottom, PageBreak, Tailwind } from "@fileforge/react-print";
 import * as React from "react";
 // @ts-ignore
