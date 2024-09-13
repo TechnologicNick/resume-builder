@@ -3,7 +3,7 @@ div.sp-layout {
   border-radius: unset;
 }
 
-.react-pdf__Document {
+.pdf-container {
   position: absolute;
   right: 0;
   top: 0;
@@ -17,6 +17,10 @@ div.sp-layout {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.react-pdf__Document {
+  display: none;
 }
 
 .react-pdf__Page {

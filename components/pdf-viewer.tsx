@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
+import type { PDFDocumentProxy } from "pdfjs-dist/types/src/display/api";
 
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -12,7 +13,9 @@ const options: React.ComponentProps<typeof Document>["options"] = {
 
 export const PDFViewer = () => {
   const [file, setFile] = useState<File | null>(null);
-  const [numPages, setNumPages] = useState(0);
+  const [lastLoadedPdf, setLastLoadedPdf] = useState<null | PDFDocumentProxy>(
+    null
+  );
 
   useEffect(() => {
     function handleMessage(event: MessageEvent<any>) {
@@ -39,14 +42,22 @@ export const PDFViewer = () => {
   }, []);
 
   return (
-    <Document
-      file={file}
-      onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-      options={options}
-    >
-      {Array.from(new Array(numPages), (_, index) => (
-        <Page key={`page_${index + 1}`} pageNumber={index + 1} />
-      ))}
-    </Document>
+    <div className="pdf-container">
+      {lastLoadedPdf &&
+        Array.from(new Array(lastLoadedPdf.numPages), (_, index) => (
+          <Page
+            key={`page_${index + 1}`}
+            pageNumber={index + 1}
+            pdf={lastLoadedPdf}
+            renderAnnotationLayer={false}
+          />
+        ))}
+
+      <Document
+        file={file}
+        onLoadSuccess={(pdf) => setLastLoadedPdf(pdf)}
+        options={options}
+      />
+    </div>
   );
 };
