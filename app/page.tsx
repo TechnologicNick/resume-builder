@@ -8,7 +8,7 @@ import {
   SandpackProvider,
   useActiveCode,
 } from "@codesandbox/sandpack-react";
-import MonacoEditor from "./_components/monaco-editor";
+import MonacoEditor from "@/components/monaco-editor";
 import { useEffect } from "react";
 
 export default function Home() {
