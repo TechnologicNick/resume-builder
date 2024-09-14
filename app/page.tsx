@@ -90,8 +90,15 @@ render(<Document />);
 const renderSource = `
 import { compile } from "@fileforge/react-print";
 
+let lastHtml: string | null = null;
+
 export async function render(element: JSX.Element) {
   const html = await compile(element)
+
+  if (html === lastHtml) {
+    return;
+  }
+
   const res = await fetch("http://localhost:3000/pdf", {
     method: "POST",
     body: html
@@ -102,6 +109,8 @@ export async function render(element: JSX.Element) {
     type: "render-pdf",
     buffer
   }, "*", [buffer]);
+
+  lastHtml = html;
 }
 `.trimStart();
 
