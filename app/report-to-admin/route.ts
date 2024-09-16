@@ -4,23 +4,30 @@ import { z } from "zod";
 // Reuse the Puppeteer browser instance
 import "../pdf/route";
 
-const config = z
-  .object({
-    FLAG: z.string().min(1),
-    APP_ORIGIN: z.string().url(),
-  })
-  .parse(process.env);
+const envSchema = z.object({
+  FLAG: z.string().min(1),
+  APP_ORIGIN: z
+    .string()
+    .url()
+    .transform((url) => new URL(url)),
+});
+
+let config: z.infer<typeof envSchema> | null = null;
 
 export async function POST(req: NextRequest) {
+  if (!config) {
+    config = envSchema.parse(process.env);
+  }
+
   const url = await req.text();
   if (!url) {
     return new Response("Empty body", { status: 400 });
   }
 
   const parsed = new URL(url);
-  if (parsed.origin !== config.APP_ORIGIN) {
+  if (parsed.origin !== config.APP_ORIGIN.origin) {
     return new Response(
-      `Invalid origin: ${parsed.origin}, expected ${config.APP_ORIGIN}`,
+      `Invalid origin: ${parsed.origin}, expected ${config.APP_ORIGIN.origin}`,
       { status: 400 }
     );
   }
@@ -33,7 +40,7 @@ export async function POST(req: NextRequest) {
     page.setCookie({
       name: "flag",
       value: config.FLAG,
-      domain: new URL(config.APP_ORIGIN).hostname,
+      domain: config.APP_ORIGIN.hostname,
     });
 
     console.log(`[${id}] Navigating to ${parsed.href}`);

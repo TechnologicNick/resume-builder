@@ -1,3 +1,4 @@
+import { PHASE_PRODUCTION_BUILD } from "next/dist/shared/lib/constants";
 import type { NextRequest } from "next/server";
 import puppeteer, { Browser, Page, PDFOptions } from "puppeteer";
 
@@ -7,16 +8,19 @@ declare global {
   var browser: Promise<Browser>;
 }
 
-globalThis.browser ??= puppeteer.launch({
-  headless: "shell",
-  pipe: true,
-  args: [
-    "--no-sandbox",
-    "--disable-setuid-sandbox",
-    "--js-flags=--noexpose_wasm,--jitless",
-  ],
-  dumpio: true,
-});
+// Prevent the browser instance from being created while building the app
+if (process.env.NEXT_PHASE !== PHASE_PRODUCTION_BUILD) {
+  globalThis.browser ??= puppeteer.launch({
+    headless: "shell",
+    pipe: true,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--js-flags=--noexpose_wasm,--jitless",
+    ],
+    dumpio: true,
+  });
+}
 
 async function createPDFStreamResponse(
   page: Page,
