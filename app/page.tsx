@@ -35,6 +35,9 @@ export default function Home() {
             hidden: true,
           },
         }}
+        options={{
+          bundlerTimeOut: 90_000,
+        }}
       >
         <HashUpdater />
         <SandpackLayout style={{ position: "relative" }}>

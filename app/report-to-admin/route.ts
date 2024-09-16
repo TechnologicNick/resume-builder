@@ -64,6 +64,20 @@ export async function POST(req: NextRequest) {
 
     console.log(`[${id}] Loading screen lifted in ${Date.now() - start}ms`);
 
+    const bundleError = await page.evaluate(() => {
+      const error = document.querySelector(
+        ".sp-overlay > .sp-error-message"
+      ) as HTMLElement | null;
+      return error?.innerText ?? null;
+    });
+
+    if (bundleError) {
+      console.error(`[${id}] Error while bundling: ${bundleError}`);
+      return new Response(`Error while bundling:\n\n${bundleError}`, {
+        status: 500,
+      });
+    }
+
     try {
       await page.waitForSelector(".react-pdf__Page", {
         timeout: 30000,
