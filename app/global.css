@@ -27,3 +27,14 @@ div.sp-layout {
   width: fit-content;
   margin: 0 auto;
 }
+
+.sandpack-button {
+  background-color: var(--sp-colors-surface2);
+  border-radius: 99999px;
+  border: 1px solid var(--sp-colors-surface3);
+  cursor: pointer;
+  color: var(--sp-colors-clickable);
+  font-size: inherit;
+  font-family: inherit;
+  padding: var(--sp-space-1) var(--sp-space-3);
+}

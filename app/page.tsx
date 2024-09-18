@@ -9,7 +9,7 @@ import {
   useActiveCode,
 } from "@codesandbox/sandpack-react";
 import MonacoEditor from "@/components/monaco-editor";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   return (
@@ -43,11 +43,52 @@ export default function Home() {
         <SandpackLayout style={{ position: "relative" }}>
           <MonacoEditor />
           {/* <SandpackCodeEditor style={{ height: "100vh" }} /> */}
-          <SandpackPreview style={{ height: "100vh" }} />
+          <SandpackPreview
+            style={{ height: "100vh" }}
+            actionsChildren={<DownloadButton />}
+          />
           <PDFViewer />
         </SandpackLayout>
       </SandpackProvider>
     </div>
+  );
+}
+
+function DownloadButton() {
+  const [html, setHtml] = useState<string | null>(null);
+
+  useEffect(() => {
+    function handleMessage(event: MessageEvent<any>) {
+      if (
+        typeof event.data !== "object" ||
+        event.data.type !== "rendered-to-html" ||
+        typeof event.data.html !== "string"
+      ) {
+        return;
+      }
+
+      setHtml(event.data.html);
+    }
+
+    window.addEventListener("message", handleMessage);
+
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, []);
+
+  return (
+    <form
+      action="http://localhost:3000/pdf"
+      method="POST"
+      target="_blank"
+      encType="text/plain"
+    >
+      <input type="hidden" name="<!--html" value={"--!>\n" + html} />
+      <button className="sandpack-button" type="submit">
+        Download PDF
+      </button>
+    </form>
   );
 }
 
@@ -101,6 +142,11 @@ export async function render(element: JSX.Element) {
   if (html === lastHtml) {
     return;
   }
+
+  window.parent.postMessage({
+    type: "rendered-to-html",
+    html
+  }, "*");
 
   const res = await fetch("http://localhost:3000/pdf", {
     method: "POST",
