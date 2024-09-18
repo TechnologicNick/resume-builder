@@ -19,13 +19,23 @@ div.sp-layout {
   gap: 1rem;
 }
 
-.react-pdf__Document, .react-pdf__Document * {
-  display: none;
+.react-pdf__Document {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .react-pdf__Page {
   width: fit-content;
   margin: 0 auto;
+}
+
+.hidden {
+  display: none;
+}
+
+.react-pdf__Document:not(:has(.textLayer)), .react-pdf__Page:not(:has(.textLayer)) {
+  display: none;
 }
 
 .sandpack-button {
