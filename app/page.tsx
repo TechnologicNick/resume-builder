@@ -126,7 +126,9 @@ type SectionHeadingProps = {
 };
 
 const SectionHeading = ({ children }: SectionHeadingProps) => (
-  <h2 className="bg-yellow-400 text-gray-900 font-extrabold py-2 px-4 uppercase">{children}</h2>
+  <h2 className="bg-yellow-400 text-gray-900 font-extrabold py-2 px-4 uppercase">
+    {children}
+  </h2>
 );
 
 type ExperienceItemProps = {
@@ -139,8 +141,16 @@ type ExperienceItemProps = {
   children: React.ReactNode;
 };
 
-const ExperienceItem = ({ title, role, date, link, displayLink, className, children }: ExperienceItemProps) => (
-  <div className={\`mt-4 break-inside-avoid \${className || ''}\`}>
+const ExperienceItem = ({
+  title,
+  role,
+  date,
+  link,
+  displayLink,
+  className,
+  children,
+}: ExperienceItemProps) => (
+  <div className={\`mt-4 break-inside-avoid \${className || ""}\`}>
     <h3 className="font-bold">{title}</h3>
     <span className="text-gray-400">
       {role} | {date}
@@ -212,7 +222,11 @@ export default function Document() {
         <div className="mt-4">
           <SectionHeading>Summary</SectionHeading>
           <p className="mt-2">
-            Experienced software engineer with a unique specialization in "yapping" and "ballin'". Known for delivering engaging user experiences, Mr. Balls contributed to the infamous "Scrap Mechanic Casino" project, introducing gamification that, while controversial, was undeniably effective at captivating young users.
+            Experienced software engineer with a unique specialization in
+            "yapping" and "ballin'". Known for delivering engaging user
+            experiences, Mr. Balls contributed to the infamous "Scrap Mechanic
+            Casino" project, introducing gamification that, while controversial,
+            was undeniably effective at captivating young users.
           </p>
         </div>
       </Section>
@@ -245,7 +259,11 @@ export default function Document() {
           date="April 2024"
           link="https://scrapmechanic.net/casino"
         >
-          Led the development of an innovative casino project within the Scrap Mechanic game. Implemented engaging gambling systems that significantly increased user engagement, particularly among younger players. Unfortunately, 90% of gambling-addicted children quit right before they were about to hit it big.
+          Led the development of an innovative casino project within the Scrap
+          Mechanic game. Implemented engaging gambling systems that
+          significantly increased user engagement, particularly among younger
+          players. Unfortunately, 90% of gambling-addicted children quit right
+          before they were about to hit it big.
         </ExperienceItem>
 
         <ExperienceItem
@@ -254,7 +272,10 @@ export default function Document() {
           date="April 2022"
           link="https://april-fools-2022.scrapmechanic.net/"
         >
-          Developed and launched the ScrapPunks NFT collection on the Ethereum blockchain. Successfully orchestrated a large-scale pump-and-dump scheme, capitalizing on speculative hype around in-game assets. The project drew attention to blockchain-driven virtual collectibles.
+          Developed and launched the ScrapPunks NFT collection on the Ethereum
+          blockchain. Successfully orchestrated a large-scale pump-and-dump
+          scheme, capitalizing on speculative hype around in-game assets. The
+          project drew attention to blockchain-driven virtual collectibles.
         </ExperienceItem>
 
         <ExperienceItem
@@ -265,7 +286,17 @@ export default function Document() {
           displayLink="https://docs.scrapmods.io/"
           className="pt-4"
         >
-          Used C++ and the Win32 API to inject a DLL into the Scrap Mechanic game process. This DLL intercepted network traffic and forwarded it to a Python script for analysis. Based on this work, extensive documentation was created, and a <a href="https://github.com/Scrap-Mods/SM_Server" className="underline text-yellow-400">dedicated server</a> is being developed in C#.
+          Used C++ and the Win32 API to inject a DLL into the Scrap Mechanic
+          game process. This DLL intercepted network traffic and forwarded it to
+          a Python script for analysis. Based on this work, extensive
+          documentation was created, and a{" "}
+          <a
+            href="https://github.com/Scrap-Mods/SM_Server"
+            className="underline text-yellow-400"
+          >
+            dedicated server
+          </a>{" "}
+          is being developed in C#.
         </ExperienceItem>
 
         <ExperienceItem
@@ -274,7 +305,12 @@ export default function Document() {
           date="Sept 2023 - Jan 2024"
           link="https://youtu.be/hyMb6Sq1Fkg"
         >
-          Developed an autonomous self-cleaning bed for hotel use. By flipping two mattresses, the bed cleans the dirty mattress underneath, saving hotel staff time and effort. Applied unique skills such as using TypeScript in non-traditional ways and discovering the limitations of Python outside of CTF challenges. Commissioned by Hotelschool The Hague.
+          Developed an autonomous self-cleaning bed for hotel use. By flipping
+          two mattresses, the bed cleans the dirty mattress underneath, saving
+          hotel staff time and effort. Applied unique skills such as using
+          TypeScript in non-traditional ways and discovering the limitations of
+          Python outside of CTF challenges. Commissioned by Hotelschool The
+          Hague.
         </ExperienceItem>
       </Section>
 
@@ -305,14 +341,16 @@ export default function Document() {
         title="Hobbies & Interests"
         items={[
           "Yapping at conferences and events",
-          "Playing with balls (\\"Ballin'\\")",
+          'Playing with balls ("Ballin\\'")',
           "Game development and casino mechanics",
           "Playing sourceless web and guessy stego CTF challenges",
         ]}
       />
 
       <PageBottom>
-        <div className="text-gray-400 text-sm m-4">Mr. Balls - Yapping since 2024</div>
+        <div className="text-gray-400 text-sm m-4">
+          Mr. Balls - Yapping since 2024
+        </div>
       </PageBottom>
     </Tailwind>
   );
