@@ -89,30 +89,21 @@ const PDF = memo(
     return (
       <Document
         file={file}
-        onLoadSuccess={(pdf) => {
-          setNumPages(pdf.numPages);
-
-          // I swear this is the only way to not have the page blink on load
-          requestAnimationFrame(() =>
-            requestAnimationFrame(() =>
-              requestAnimationFrame(() =>
-                requestAnimationFrame(() =>
-                  requestAnimationFrame(() =>
-                    requestAnimationFrame(() => {
-                      setLoading(false);
-                      onLoadSuccessReal?.(file);
-                    })
-                  )
-                )
-              )
-            )
-          );
-        }}
+        onLoadSuccess={(pdf) => setNumPages(pdf.numPages)}
         options={options}
         className={loading ? "hidden" : ""}
       >
         {Array.from(new Array(numPages), (_, index) => (
-          <Page key={`page_${index + 1}`} pageNumber={index + 1} />
+          <Page
+            key={`page_${index + 1}`}
+            pageNumber={index + 1}
+            onRenderSuccess={() => {
+              setLoading(false);
+              if (loading) {
+                onLoadSuccessReal?.(file);
+              }
+            }}
+          />
         ))}
       </Document>
     );
