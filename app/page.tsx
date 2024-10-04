@@ -376,7 +376,7 @@ export async function render(element: JSX.Element) {
     html
   }, "*");
 
-  const res = await fetch("http://localhost:3000/pdf", {
+  const res = await fetch("${typeof window !== "undefined" ? window.location.origin : "http://localhost:3000"}/pdf", {
     method: "POST",
     body: html
   });
