@@ -48,3 +48,7 @@ div.sp-layout {
   font-family: inherit;
   padding: var(--sp-space-1) var(--sp-space-3);
 }
+
+div.sp-preview-actions {
+  z-index: 3;
+}
