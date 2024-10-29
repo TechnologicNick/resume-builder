@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 
 import "react-pdf/dist/Page/AnnotationLayer.css";
@@ -13,8 +13,11 @@ const options: React.ComponentProps<typeof Document>["options"] = {
 /**
  * PDFViewer component that listens for messages from the parent window
  */
-export const PDFViewer = () => {
-  const [files, setFiles] = useState<{ key: string; file: File }[]>([]);
+export const PDFViewer = ({ scale = 1 }: { scale?: number }) => {
+  const [files, setFiles] = useState<
+    { key: string; file: File; scale: number }[]
+  >([]);
+  const scaleRef = useRef(scale);
 
   useEffect(() => {
     function handleMessage(event: MessageEvent<any>) {
@@ -35,6 +38,7 @@ export const PDFViewer = () => {
           {
             key: crypto.randomUUID(),
             file,
+            scale: scaleRef.current,
           },
         ]
           .concat(files)
@@ -48,6 +52,23 @@ export const PDFViewer = () => {
       window.removeEventListener("message", handleMessage);
     };
   }, []);
+
+  useEffect(() => {
+    if (scale !== scaleRef.current) {
+      scaleRef.current = scale;
+      setFiles((files) =>
+        [
+          {
+            key: crypto.randomUUID(),
+            file: files[0]?.file,
+            scale: scaleRef.current,
+          },
+        ]
+          .concat(files)
+          .slice(0, 2)
+      );
+    }
+  }, [scale]);
 
   const onLoadSuccessReal = useCallback((removeFilesOlderThan: File) => {
     setFiles((currentFiles) => {
@@ -65,8 +86,13 @@ export const PDFViewer = () => {
 
   return (
     <div className="pdf-container">
-      {files.map(({ key, file }) => (
-        <PDF key={key} file={file} onLoadSuccessReal={onLoadSuccessReal} />
+      {files.map(({ key, file, scale }) => (
+        <PDF
+          key={key}
+          file={file}
+          onLoadSuccessReal={onLoadSuccessReal}
+          scale={scale}
+        />
       ))}
     </div>
   );
@@ -79,9 +105,11 @@ const PDF = memo(
   ({
     file,
     onLoadSuccessReal,
+    scale,
   }: {
     file: File;
     onLoadSuccessReal?: (file: File) => void;
+    scale?: number;
   }) => {
     const [numPages, setNumPages] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -103,6 +131,7 @@ const PDF = memo(
                 onLoadSuccessReal?.(file);
               }
             }}
+            scale={scale}
           />
         ))}
       </Document>

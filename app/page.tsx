@@ -12,6 +12,8 @@ import MonacoEditor from "@/components/monaco-editor";
 import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [scale, setScale] = useState(1);
+
   return (
     <div>
       <SandpackProvider
@@ -45,9 +47,66 @@ export default function Home() {
           {/* <SandpackCodeEditor style={{ height: "100vh" }} /> */}
           <SandpackPreview
             style={{ height: "100vh" }}
-            actionsChildren={<DownloadButton />}
+            actionsChildren={
+              <>
+                <button
+                  className="sandpack-button"
+                  style={{
+                    paddingInline: "unset",
+                    width: "var(--sp-space-7)",
+                    height: "var(--sp-space-7)",
+                    position: "relative",
+                  }}
+                  onClick={() => setScale((prev) => prev - 0.1)}
+                  title="Zoom out"
+                >
+                  <span
+                    style={{
+                      left: "50%",
+                      top: "50%",
+                      position: "absolute",
+                      translate: "-50% -65%",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    -
+                  </span>
+                </button>
+                <button
+                  className="sandpack-button"
+                  onClick={() => setScale(1)}
+                  title="Reset zoom"
+                >
+                  x{scale.toFixed(1)}
+                </button>
+                <button
+                  className="sandpack-button"
+                  style={{
+                    paddingInline: "unset",
+                    width: "var(--sp-space-7)",
+                    height: "var(--sp-space-7)",
+                    position: "relative",
+                  }}
+                  onClick={() => setScale((prev) => prev + 0.1)}
+                  title="Zoom in"
+                >
+                  <span
+                    style={{
+                      left: "50%",
+                      top: "50%",
+                      position: "absolute",
+                      translate: "-50% -65%",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    +
+                  </span>
+                </button>
+                <DownloadButton />
+              </>
+            }
           />
-          <PDFViewer />
+          <PDFViewer scale={scale} />
         </SandpackLayout>
       </SandpackProvider>
     </div>
@@ -380,7 +439,11 @@ export async function render(element: JSX.Element) {
     html
   }, "*");
 
-  const res = await fetch("${typeof window !== "undefined" ? window.location.origin : "http://localhost:3000"}/pdf", {
+  const res = await fetch("${
+    typeof window !== "undefined"
+      ? window.location.origin
+      : "http://localhost:3000"
+  }/pdf", {
     method: "POST",
     body: html
   });
