@@ -79,7 +79,11 @@ function DownloadButton() {
 
   return (
     <form
-      action="http://localhost:3000/pdf"
+      action={
+        typeof window !== "undefined"
+          ? window.location.origin + "/pdf"
+          : "http://localhost:3000/pdf"
+      }
       method="POST"
       target="_blank"
       encType="text/plain"
