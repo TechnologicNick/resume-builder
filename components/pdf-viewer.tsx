@@ -111,8 +111,15 @@ const PDF = memo(
     onLoadSuccessReal?: (file: File) => void;
     scale?: number;
   }) => {
-    const [numPages, setNumPages] = useState(0);
-    const [loading, setLoading] = useState(true);
+    const [numPages, setNumPages] = useState<number | null>(null);
+    const [numPagesLoaded, setNumPagesLoaded] = useState(0);
+    const loading = numPages !== numPagesLoaded;
+
+    useEffect(() => {
+      if (numPages === numPagesLoaded) {
+        onLoadSuccessReal?.(file);
+      }
+    }, [file, numPages, numPagesLoaded, onLoadSuccessReal]);
 
     return (
       <Document
@@ -121,19 +128,17 @@ const PDF = memo(
         options={options}
         className={loading ? "hidden" : ""}
       >
-        {Array.from(new Array(numPages), (_, index) => (
-          <Page
-            key={`page_${index + 1}`}
-            pageNumber={index + 1}
-            onRenderSuccess={() => {
-              setLoading(false);
-              if (loading) {
-                onLoadSuccessReal?.(file);
-              }
-            }}
-            scale={scale}
-          />
-        ))}
+        {numPages &&
+          Array.from(new Array(numPages), (_, index) => (
+            <Page
+              key={`page_${index + 1}`}
+              pageNumber={index + 1}
+              onRenderSuccess={() => {
+                setNumPagesLoaded((current) => current + 1);
+              }}
+              scale={scale}
+            />
+          ))}
       </Document>
     );
   }
