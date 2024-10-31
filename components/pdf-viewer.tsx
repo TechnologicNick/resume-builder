@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 
 import "react-pdf/dist/Page/AnnotationLayer.css";
@@ -115,7 +115,7 @@ const PDF = memo(
     const [numPagesLoaded, setNumPagesLoaded] = useState(0);
     const loading = numPages !== numPagesLoaded;
 
-    useEffect(() => {
+    useLayoutEffect(() => {
       if (numPages === numPagesLoaded) {
         onLoadSuccessReal?.(file);
       }
