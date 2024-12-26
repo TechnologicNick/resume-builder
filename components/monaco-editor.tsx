@@ -9,10 +9,25 @@ const extraLibs = Promise.all(
   [
     "https://cdn.jsdelivr.net/npm/@types/react/index.d.ts",
     "https://cdn.jsdelivr.net/npm/@fileforge/react-print@0.1.147/dist/client.d.ts",
+    "https://cdn.jsdelivr.net/npm/react-icons@5.3.0/fa/index.d.ts",
+    "https://cdn.jsdelivr.net/npm/react-icons@5.3.0/tb/index.d.ts",
+    "https://cdn.jsdelivr.net/npm/react-icons@5.3.0/lib/iconBase.d.ts",
+    "https://cdn.jsdelivr.net/npm/react-icons@5.3.0/lib/iconContext.d.ts",
+    "https://cdn.jsdelivr.net/npm/react-icons@5.3.0/lib/iconsManifest.d.ts",
   ].map((url) => fetch(url, { cache: "force-cache" }).then((res) => res.text()))
-).then(([reactTypes, reactPrintTypes]) => ({
+).then(([
+  reactTypes,
+  reactPrintTypes,
+  reactIconsFaTypes,
+  reactIconsTbTypes,
+  reactIconsLibIconBaseTypes,
+  reactIconsLibIconContextTypes,
+  reactIconsLibIconsManifestTypes,
+]) => ({
   "file://node_modules/@types/react/index.d.ts": `declare module "react" { ${reactTypes} }`,
   "file://node_modules/@fileforge/react-print/client.d.ts": `declare module "@fileforge/react-print" { ${reactPrintTypes} }`,
+  "file://node_modules/react-icons/fa/index.d.ts": `declare module "react-icons/fa" { ${reactIconsLibIconBaseTypes}\n${reactIconsLibIconContextTypes}\n${reactIconsLibIconsManifestTypes}\n${reactIconsFaTypes.replace("import type { IconType } from '../lib/index'", "")} }`,
+  "file://node_modules/react-icons/tb/index.d.ts": `declare module "react-icons/tb" { ${reactIconsLibIconBaseTypes}\n${reactIconsLibIconContextTypes}\n${reactIconsLibIconsManifestTypes}\n${reactIconsTbTypes.replace("import type { IconType } from '../lib/index'", "")} }`,
 }));
 
 export default function MonacoEditor() {

@@ -22,6 +22,7 @@ export default function Home() {
         customSetup={{
           dependencies: {
             "@fileforge/react-print": "^0.1.144",
+            "react-icons": "^5.3.0",
           },
         }}
         files={{
