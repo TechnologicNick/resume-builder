@@ -158,11 +158,23 @@ function DownloadButton() {
   );
 }
 
+function encodeUTF8Base64(str: string): string {
+  const encoder = new TextEncoder();
+  const bytes = encoder.encode(str);
+  return btoa(String.fromCharCode(...bytes));
+}
+
+function decodeUTF8Base64(str: string): string {
+  const decoder = new TextDecoder();
+  const bytes = Uint8Array.from(atob(str), c => c.charCodeAt(0));
+  return decoder.decode(bytes);
+}
+
 function HashUpdater() {
   const { code } = useActiveCode();
 
   useEffect(() => {
-    window.history.replaceState(null, "", `#${btoa(code)}`);
+    window.history.replaceState(null, "", `#${encodeUTF8Base64(code)}`);
   }, [code]);
 
   return null;
@@ -170,7 +182,7 @@ function HashUpdater() {
 
 const source =
   typeof window !== "undefined" && window.location.hash
-    ? atob(window.location.hash.slice(1))
+    ? decodeUTF8Base64(window.location.hash.slice(1))
     : `
 import { CSS, PageBottom, PageBreak, Tailwind } from "@fileforge/react-print";
 import * as React from "react";
