@@ -23,6 +23,8 @@ export default function Home() {
           dependencies: {
             "@fileforge/react-print": "^0.1.144",
             "react-icons": "^5.3.0",
+            "tailwind-merge": "^2.6.0",
+            "clsx": "^2.1.1",
           },
         }}
         files={{
@@ -172,10 +174,16 @@ const source =
     : `
 import { CSS, PageBottom, PageBreak, Tailwind } from "@fileforge/react-print";
 import * as React from "react";
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
 // @ts-ignore
 import { render } from "./render";
 
 // No JSX syntax highlighting sadly, I tried
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
 
 type SectionProps = {
   children: React.ReactNode;

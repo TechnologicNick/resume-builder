@@ -14,6 +14,8 @@ const extraLibs = Promise.all(
     "https://cdn.jsdelivr.net/npm/react-icons@5.3.0/lib/iconBase.d.ts",
     "https://cdn.jsdelivr.net/npm/react-icons@5.3.0/lib/iconContext.d.ts",
     "https://cdn.jsdelivr.net/npm/react-icons@5.3.0/lib/iconsManifest.d.ts",
+    "https://cdn.jsdelivr.net/npm/tailwind-merge@2.6.0/dist/types.d.ts",
+    "https://cdn.jsdelivr.net/npm/clsx@2.1.1/clsx.d.mts",
   ].map((url) => fetch(url, { cache: "force-cache" }).then((res) => res.text()))
 ).then(([
   reactTypes,
@@ -23,11 +25,15 @@ const extraLibs = Promise.all(
   reactIconsLibIconBaseTypes,
   reactIconsLibIconContextTypes,
   reactIconsLibIconsManifestTypes,
+  tailwindMergeTypes,
+  clsxTypes,
 ]) => ({
   "file://node_modules/@types/react/index.d.ts": `declare module "react" { ${reactTypes} }`,
   "file://node_modules/@fileforge/react-print/client.d.ts": `declare module "@fileforge/react-print" { ${reactPrintTypes} }`,
   "file://node_modules/react-icons/fa/index.d.ts": `declare module "react-icons/fa" { ${reactIconsLibIconBaseTypes}\n${reactIconsLibIconContextTypes}\n${reactIconsLibIconsManifestTypes}\n${reactIconsFaTypes.replace("import type { IconType } from '../lib/index'", "")} }`,
   "file://node_modules/react-icons/tb/index.d.ts": `declare module "react-icons/tb" { ${reactIconsLibIconBaseTypes}\n${reactIconsLibIconContextTypes}\n${reactIconsLibIconsManifestTypes}\n${reactIconsTbTypes.replace("import type { IconType } from '../lib/index'", "")} }`,
+  "file://node_modules/tailwind-merge/index.d.ts": `declare module "tailwind-merge" { ${tailwindMergeTypes} }`,
+  "file://node_modules/clsx/index.d.ts": `declare module "clsx" { ${clsxTypes} }`,
 }));
 
 export default function MonacoEditor() {
