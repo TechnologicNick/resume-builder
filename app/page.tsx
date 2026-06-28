@@ -45,6 +45,7 @@ export default function Home() {
         }}
       >
         <HashUpdater />
+        <PDFRenderBridge />
         <SandpackLayout style={{ position: "relative" }}>
           <MonacoEditor />
           {/* <SandpackCodeEditor style={{ height: "100vh" }} /> */}
@@ -114,6 +115,43 @@ export default function Home() {
       </SandpackProvider>
     </div>
   );
+}
+
+function PDFRenderBridge() {
+  useEffect(() => {
+    async function handleMessage(event: MessageEvent<any>) {
+      if (
+        typeof event.data !== "object" ||
+        event.data.type !== "request-render-pdf" ||
+        typeof event.data.html !== "string"
+      ) {
+        return;
+      }
+
+      const res = await fetch(`${window.location.origin}/pdf`, {
+        method: "POST",
+        body: event.data.html,
+      });
+      const buffer = await res.arrayBuffer();
+
+      window.postMessage(
+        {
+          type: "render-pdf",
+          buffer,
+        },
+        "*",
+        [buffer]
+      );
+    }
+
+    window.addEventListener("message", handleMessage);
+
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, []);
+
+  return null;
 }
 
 function DownloadButton() {
@@ -460,22 +498,12 @@ export async function render(element: JSX.Element) {
     html
   }, "*");
 
-  const res = await fetch("${
-    typeof window !== "undefined"
-      ? window.location.origin
-      : "http://localhost:3000"
-  }/pdf", {
-    method: "POST",
-    body: html
-  });
-  const buffer = await res.arrayBuffer();
-  
-  window.parent.postMessage({
-    type: "render-pdf",
-    buffer
-  }, "*", [buffer]);
-
   lastHtml = html;
+
+  window.parent.postMessage({
+    type: "request-render-pdf",
+    html
+  }, "*");
 }
 `.trimStart();
 
